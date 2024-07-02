@@ -8,7 +8,13 @@ const ipstackApiUrl = `http://api.ipstack.com/check?access_key=${ipstackAccessKe
 const meteoWeatherAPI = 'https://api.open-meteo.com/v1/forecast?';
 
 app.get('/api/hello', async (req, res) => {
-    const personName = req.query.personName || 'Tee';
+    const personName = req.query.personName;
+
+    if (!personName) {
+        return res.status(400).json({
+            message: 'Please enter your name in the URL'
+        });
+    }
 
     try {
         // Fetch location data using Axios
@@ -20,7 +26,7 @@ app.get('/api/hello', async (req, res) => {
         // const weatherResponse = await axios.get(`${meteoWeatherAPI}&current=temperature_2m&hourly=temperature_2m&forecast_days=1`);
         const currentTemperature = weatherResponse.data.current.temperature_2m;
 
-        const greeting = `Hello ${personName}, the temperature is ${currentTemperature}°C in ${city}`;
+        const greeting = `Hello ${personName}!, the temperature is ${currentTemperature}°C in ${city}`;
 
         res.json({
             ip,
