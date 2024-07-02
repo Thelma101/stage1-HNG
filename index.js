@@ -1,48 +1,46 @@
 const express = require('express');
-const fetch = require('node-fetch');
 const app = express();
 const port = 3001;
 
-// Replace with your actual API keys
 const ipstackAccessKey = '7d065c730b8326a1b41caa942cf628fa';
-// const weatherbitAPIKey = 'YOUR_WEATHERBIT_API_KEY';
 
 app.get('/api/hello', async (req, res) => {
-    const visitorName = req.query.visitor_name || 'Tee';
+    const personName = req.query.personName || 'Tee';
 
     try {
-        // Fetch location data based on client's IP address
-        const locationUrl = `http://api.ipstack.com/check?access_key=${ipstackAccessKey}`;
-        const locationResponse = await fetch(locationUrl);
-        const locationData = await locationResponse.json();
+        // Fetch location data
+        const locationUrl = await fetch(`https://api.ipstack.com/check?access_key=${ipstackAccessKey}`);
+        const locationData = await locationUrl.json();
 
-        const clientIP = locationData.ip || req.ip;
-        const location = locationData.city || 'London';
-        const lat = locationData.latitude;
-        const lon = locationData.longitude;
+        const { ip, country_name, city, latitude: lat, longitude: lon } = locationData;
 
-        // Fetch weather data based on location
-        // const tempUrl = `https://api.weatherbit.io/v2.0/current?lat=${lat}&lon=${lon}&key=${weatherbitAPIKey}`;
-        // const tempResponse = await fetch(tempUrl);
-        // const tempData = await tempResponse.json();
+        const message = `Hello ${personName} from ${country_name}`;
+        
+        res.json({
+            message,
+            ip,
+            city,
+            lat,
+            lon
+        });
 
-        // const temperature = tempData.data[0].temp;
+        // Fetch temperature data
+        const temperatureUrl = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`);
+        const temperatureData = await temperatureUrl.json();
 
-        // Prepare the response
-        const response = {
-            client_ip: clientIP,
-            location: location,
-            // greeting: `Hello, ${visitorName}!, the temperature is ${temperature} degrees Celsius in ${location}`
-            greeting: `Hello, ${visitorName}!,degrees Celsius in ${location}`
-        };
+        const { temperature, windspeed, winddirection, weathercode, time } = temperatureData.current_weather;
 
-        res.json(response);
+        console.log(`${message} - It's ${temperature}°C, ${windspeed} m/s from ${winddirection} at ${time}`);
+        
+        console.log(message);
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Error fetching data' });
+        res.status(500).json({
+            message: 'Error Fetching Data'
+        });
     }
 });
 
 app.listen(port, () => {
-    console.log(`Server is connected on ${port}`);
+    console.log(`Hurray, server is connected on ${port}`);
 });
