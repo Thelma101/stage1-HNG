@@ -4,7 +4,7 @@ const { IPinfoWrapper } = require('node-ipinfo');
 const app = express();
 const port = 3001;
 
-const ipinfoToken = 'cb0526a54b8e6e'; // Replace with your ipinfo.io token
+const ipinfoToken = 'cb0526a54b8e6e'; 
 const ipinfo = new IPinfoWrapper(ipinfoToken);
 const meteoWeatherAPI = 'https://api.open-meteo.com/v1/forecast?';
 
@@ -24,10 +24,8 @@ app.get('/api/hello', async (req, res) => {
     }
 
     try {
-        // Get client's IP address from request headers
         let clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 
-        // Check if running locally and adjust IP
         if (clientIp === '::1' || clientIp === '127.0.0.1') {
             clientIp = await getExternalIp();
         }
@@ -35,9 +33,8 @@ app.get('/api/hello', async (req, res) => {
         // Fetch location data using ipinfo.io
         const locationResponse = await ipinfo.lookupIp(clientIp);
 
-        console.log('Location Response:', locationResponse); // Log the entire response to see its structure
+        console.log('Location Response:', locationResponse);
 
-        // Check if locationResponse contains expected fields
         if (!locationResponse.city || !locationResponse.loc) {
             throw new Error('Location data not available');
         }
@@ -47,7 +44,6 @@ app.get('/api/hello', async (req, res) => {
         // Extract latitude and longitude from loc
         const [latitude, longitude] = loc.split(',');
 
-        // Fetch temperature data using latitude and longitude
         const weatherResponse = await axios.get(`${meteoWeatherAPI}&latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&forecast_days=1`);
         const currentTemperature = weatherResponse.data.current.temperature_2m;
 
