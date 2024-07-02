@@ -6,10 +6,12 @@ app.get('/api/hello?',  (req, res) => {
 
 })
 
-const url = 'https://api.ipstack.com/check?access_key={PASTE_YOUR_API_KEY_HERE}';
+const locationUrl = 'https://api.ipstack.com/check?access_key={7d065c730b8326a1b41caa942cf628fa}';
 const options = {
 	method: 'GET'
 };
+
+const tempUrl = 'https://api.weatherbit.io/v2.0/current?lat=35.7796&lon=-78.6382&key=API_KEY&include=minutely';
 
 try {
 	const response = await fetch(url, options);
