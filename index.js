@@ -13,22 +13,14 @@ app.get('/api/hello', async (req, res) => {
     try {
         // Fetch location data using Axios
         const locationResponse = await axios.get(ipstackApiUrl);
-        const { ip, city } = locationResponse.data;
+        const { ip, city, latitude, longitude } = locationResponse.data;
 
-        // if (!latitude || !longitude) {
-        //     throw new Error('Location data not available');
-        // }
-
-        //         {
-        //   "client_ip": "127.0.0.1", // The IP address of the requester
-        //   "location": "New York" // The city of the requester
-        //   "greeting": "Hello, Mark!, the temperature is 11 degrees Celcius in New York"
-        // }
-
+        // Fetch temperature data using latitude and longitude
         const weatherResponse = await axios.get(`${meteoWeatherAPI}&latitude=${latitude}&longitude=${longitude}&current=temperature_2m&hourly=temperature_2m&forecast_days=1`);
+        // const weatherResponse = await axios.get(`${meteoWeatherAPI}&current=temperature_2m&hourly=temperature_2m&forecast_days=1`);
         const currentTemperature = weatherResponse.data.current.temperature_2m;
 
-        const greeting = `Hello ${personName}!, the temperature is ${currentTemperature}°C in ${city}`;
+        const greeting = `Hello ${personName}, the temperature is ${currentTemperature}°C in ${city}`;
 
         res.json({
             ip,
@@ -37,7 +29,7 @@ app.get('/api/hello', async (req, res) => {
         });
 
         console.log(ip);
-        console.log(location);
+        console.log(city);
         console.log(greeting);
     } catch (error) {
         console.error(error);
@@ -48,5 +40,5 @@ app.get('/api/hello', async (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Hurray, server is connected on http://localhost:${port}`);
+    console.log(`Hurray, server is running on http://localhost:${port}`);
 });
