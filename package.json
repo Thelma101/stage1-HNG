@@ -12,6 +12,7 @@
   "dependencies": {
     "axios": "^1.7.2",
     "express": "^4.19.2",
+    "node-ipinfo": "^3.5.1",
     "openmeteo": "^1.1.4"
   }
 }
